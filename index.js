@@ -1,10 +1,10 @@
 const express = require('express');
-
+const cors = require('cors');
 const app = express();
 const MongoClient = require("mongodb");
 const port = 4100
 app.use(express.json());
-
+app.use(cors());
 const uri = "mongodb+srv://MaUser:brown@cluster0.5e4zk.mongodb.net/myFirstDatabase?retryWrites=true&w=majority"
 app.use(express.json());
 app.listen(port, function(){
@@ -20,6 +20,7 @@ MongoClient.connect(uri, {useUnifiedTopology: true}, function(err,client){
 })
 
 app.post('/postBlog', function(req,res){
+    console.log("I was called");
     db.collection('blogs').insertOne(
         {
             "title": req.body.title,
@@ -35,12 +36,15 @@ app.post('/postBlog', function(req,res){
 app.get('/getBlogs', function(req,res){
     db.collection('blogs').find({}).toArray(function(error,documents){
         if (error) throw error;
-        for (let counter = 0; counter < documents.length;counter++){
-            res.write("Title: " + documents[counter].title + " Content: " + documents[counter].content + " Author: " + documents[counter].content + '\n');
-        }
-        res.end();
+        res.send(documents)
+        //for (let counter = 0; counter < documents.length;counter++){
+            //res.write("Title: " + documents[counter].title + " Content: " + documents[counter].content + " Author: " + documents[counter].content + '\n');
+        //}
+        //res.end();
     })
 })
+
+
 app.post('/customBlog', function(req,res){
     db.collection('blogs').insertOne({
         title: req.body.title,
